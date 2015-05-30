@@ -2,6 +2,28 @@ package com.TankWarBeta;
 
 import java.util.Vector;
 
+class Bomb {
+	int x;
+	int y;
+	//bomb life
+	int life = 9;
+	boolean isLive = true;
+	public Bomb(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	
+	
+	//life eclipse
+	public void lifeDown() {
+		if (life > 0) {
+			life--;
+		} else {
+			this.isLive = false;
+		}
+	}
+}
+
 class Tank {
 	//x-coodinate 
 	int x = 0;
@@ -113,10 +135,11 @@ class Hero extends Tank{
 	
 }
 //enemy tank
-class EnemyTank extends Tank{	
+class EnemyTank extends Tank implements Runnable{	
 	
 	boolean isLive = true;
-	
+	Vector<Shot> ss = new Vector<Shot>();
+	 
 	public EnemyTank(int x, int y) {
 		super(x, y);
 	}
@@ -133,6 +156,75 @@ class EnemyTank extends Tank{
 	}
 	public void moveLeft() {
 		x  -= speed;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		while (true) {
+			int steps = (int)(Math.random() * 40);
+			switch(direct) {
+			case 0:
+				for (int i = 0; i < steps; i++) {
+					if (y <= 15) {
+						break;
+					}
+					y -= speed;
+					try {
+						Thread.sleep(50);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				break;
+			case 1:
+				for (int i = 0; i < steps; i++) {
+					if (x >= 385) {
+						break;
+					}
+					x += speed;
+					try {
+						Thread.sleep(50);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				break;
+			case 2:
+				for (int i = 0; i < steps; i++) {
+					if (y >= 285) {
+						break;
+					}
+					y += speed;
+					try {
+						Thread.sleep(50);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				break;
+			case 3:
+				for (int i = 0; i < steps; i++) {
+					if (x <= 15) {
+						break;
+					}
+					x -= speed;
+					try {
+						Thread.sleep(50);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				break;
+			}
+			this.direct = (int)(Math.random() * 4);
+			
+			//judge if the enemy's tank dead
+			if (this.isLive == false) {
+				break;
+			}
+			
+		}
 	}
 	
 }

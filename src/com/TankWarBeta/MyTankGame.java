@@ -32,6 +32,10 @@ class MyPanel extends JPanel implements KeyListener, Runnable{
 	//define my tank
 	Hero hero = null;
 	Vector<EnemyTank> ets = new Vector<EnemyTank>();
+	//define boom list
+	Vector<Bomb> bombs = new Vector<Bomb>();
+	
+	//define three pictures, all 3 pics formed the bomb
 	Image im1 = null;
 	Image im2 = null;
 	Image im3 = null;
@@ -42,11 +46,20 @@ class MyPanel extends JPanel implements KeyListener, Runnable{
 		hero = new Hero(40,90);
 		
 		
-		//初始化敌人坦克组
+		//initialize enemyTank
 		for (int i = 0; i < enSize; i++) {
 			EnemyTank et = new EnemyTank((i+1) * 50, 40);
 			et.setColor(0);
+			Thread t = new Thread(et);
+			t.start();
 			ets.add(et);
+			//add one shot to enemyTank
+			Shot s = new Shot(et.x, et.y + 15, 2);
+			
+			//add shot to vector
+			et.ss.add(s);
+			Thread t2 = new Thread(s);
+			t2.start();
 		}
 		
 		//initialize pictures
@@ -68,10 +81,20 @@ class MyPanel extends JPanel implements KeyListener, Runnable{
 			EnemyTank et = ets.get(i);
 			if (et.isLive) {
 				this.drawTank(et.getX(), et.getY(), g, et.getDirect(), 0);
+				//Draw the enemy shot
+				for (int j = 0; j < et.ss.size(); j++) {
+					Shot enemyShot = et.ss.get(j);
+					if (enemyShot != null && enemyShot.isLive) {
+						System.out.println("the " + i + " tank " + j + " shot" + enemyShot.x);
+						g.draw3DRect(enemyShot.x, enemyShot.y+15, 1, 1, false);
+					} else {
+						et.ss.remove(enemyShot);
+					}
+				}
 			}
 		}
 		
-		//Draw the shot
+		//Draw the hero shot
 		for (int i = 0; i < hero.ss.size(); i++) {
 			Shot myShot = hero.ss.get(i);
 			if (myShot != null && myShot.isLive) {
@@ -80,6 +103,26 @@ class MyPanel extends JPanel implements KeyListener, Runnable{
 			
 			if (myShot.isLive == false) {
 				hero.ss.remove(i);
+			}
+		}
+
+		
+		//Draw the bomb
+		for (int i = 0; i < bombs.size(); i++) {
+			
+			System.out.println("bombs.size() =  " + bombs.size());
+			Bomb b = bombs.get(i);
+			if (b.life > 6) {
+				g.drawImage(im1, b.x - 15, b.y - 15, 30, 30, this);
+			} else if (b.life > 3) {
+				g.drawImage(im2, b.x - 15, b.y - 15, 30, 30, this);
+			} else if (b.life > 0) {
+				g.drawImage(im3, b.x - 15, b.y - 15, 30, 30, this);
+			}
+			
+			b.lifeDown();
+			if (b.life == 0) {
+				bombs.remove(b);
 			}
 		}
 		
@@ -96,6 +139,9 @@ class MyPanel extends JPanel implements KeyListener, Runnable{
 				//hit, shot, enemytank disapeard
 				s.isLive = false;
 				et.isLive = false;
+				//get a bomb
+				Bomb b = new Bomb(et.x, et.y);
+				bombs.addElement(b);
 			}
 			
 		case 1:
@@ -104,6 +150,8 @@ class MyPanel extends JPanel implements KeyListener, Runnable{
 				//hit, shot, enemytank disapeard
 				s.isLive = false;
 				et.isLive = false;
+				Bomb b = new Bomb(et.x, et.y);
+				bombs.addElement(b);
 			}
 		}
 	}
@@ -226,7 +274,35 @@ class MyPanel extends JPanel implements KeyListener, Runnable{
 					}
 				}
 			}
-			
+			//judge if we need to add new shots
+			for (int i = 0; i < ets.size(); i++) {
+				EnemyTank et = ets.get(i);
+				if (et.isLive) {
+					if (et.ss.size() < 10) {
+						Shot s = null;
+						switch(et.direct) {
+						case 0:
+							s = new Shot(et.x, et.y -15, 0);
+							et.ss.add(s);
+							break;
+						case 1:
+							s = new Shot(et.x + 15, et.y, 1);
+							et.ss.add(s);
+							break;
+						case 2:
+							s = new Shot(et.x, et.y +15, 2);
+							et.ss.add(s);
+							break;
+						case 3:
+							s = new Shot(et.x - 15, et.y -15, 3);
+							et.ss.add(s);
+							break;
+						}
+						Thread newShot = new Thread(s);
+						newShot.start();
+					}
+				} 
+			}
 			
 			this.repaint();
 		}
