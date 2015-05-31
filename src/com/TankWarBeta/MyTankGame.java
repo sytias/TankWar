@@ -274,35 +274,35 @@ class MyPanel extends JPanel implements KeyListener, Runnable{
 					}
 				}
 			}
-			//judge if we need to add new shots
-			for (int i = 0; i < ets.size(); i++) {
-				EnemyTank et = ets.get(i);
-				if (et.isLive) {
-					if (et.ss.size() < 10) {
-						Shot s = null;
-						switch(et.direct) {
-						case 0:
-							s = new Shot(et.x, et.y -15, 0);
-							et.ss.add(s);
-							break;
-						case 1:
-							s = new Shot(et.x + 15, et.y, 1);
-							et.ss.add(s);
-							break;
-						case 2:
-							s = new Shot(et.x, et.y +15, 2);
-							et.ss.add(s);
-							break;
-						case 3:
-							s = new Shot(et.x - 15, et.y -15, 3);
-							et.ss.add(s);
-							break;
-						}
-						Thread newShot = new Thread(s);
-						newShot.start();
-					}
-				} 
-			}
+//			//judge if we need to add new shots
+//			for (int i = 0; i < ets.size(); i++) {
+//				EnemyTank et = ets.get(i);
+//				if (et.isLive) {
+//					if (et.ss.size() < 10) {
+//						Shot s = null;
+//						switch(et.direct) {
+//						case 0:
+//							s = new Shot(et.x, et.y -15, 0);
+//							et.ss.add(s);
+//							break;
+//						case 1:
+//							s = new Shot(et.x + 15, et.y, 1);
+//							et.ss.add(s);
+//							break;
+//						case 2:
+//							s = new Shot(et.x, et.y +15, 2);
+//							et.ss.add(s);
+//							break;
+//						case 3:
+//							s = new Shot(et.x - 15, et.y -15, 3);
+//							et.ss.add(s);
+//							break;
+//						}
+//						Thread newShot = new Thread(s);
+//						newShot.start();
+//					}
+//				} 
+//			}
 			
 			this.repaint();
 		}

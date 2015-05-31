@@ -144,6 +144,7 @@ class EnemyTank extends Tank implements Runnable{
 		super(x, y);
 	}
 	
+	int times = 0;
 	//坦克想上移动
 	public void moveUp() {
 		y -= speed;
@@ -157,7 +158,8 @@ class EnemyTank extends Tank implements Runnable{
 	public void moveLeft() {
 		x  -= speed;
 	}
-
+	
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -217,6 +219,37 @@ class EnemyTank extends Tank implements Runnable{
 				}
 				break;
 			}
+			//judge if we need to add new shots
+			
+			this.times++;
+			if (times % 2 ==0) {
+				if (isLive) {
+					if (ss.size() < 5) {
+						Shot s = null;
+						switch(direct) {
+						case 0:
+							s = new Shot(x, y -15, 0);
+							ss.add(s);
+							break;
+						case 1:
+							s = new Shot(x + 15, y, 1);
+							ss.add(s);
+							break;
+						case 2:
+							s = new Shot(x, y +15, 2);
+							ss.add(s);
+							break;
+						case 3:
+							s = new Shot(x - 15, y -15, 3);
+							ss.add(s);
+							break;
+						}
+						Thread newShot = new Thread(s);
+						newShot.start();
+					}
+				}
+			}
+			
 			this.direct = (int)(Math.random() * 4);
 			
 			//judge if the enemy's tank dead
